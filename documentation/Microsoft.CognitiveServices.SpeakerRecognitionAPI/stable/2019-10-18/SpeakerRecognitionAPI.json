@@ -1,0 +1,712 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Speaker Recognition API",
+    "version": "1.0"
+  },
+  "host": "cognitive-wu.cognitiveservices.azure.com",
+  "basePath": "/spid/v1.0",
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "apiKeyHeader": {
+      "type": "apiKey",
+      "name": "Ocp-Apim-Subscription-Key",
+      "in": "header"
+    },
+    "apiKeyQuery": {
+      "type": "apiKey",
+      "name": "subscription-key",
+      "in": "query"
+    }
+  },
+  "security": [
+    {
+      "apiKeyHeader": []
+    },
+    {
+      "apiKeyQuery": []
+    }
+  ],
+  "x-servers": [
+    {
+      "url": "https://cognitive-wu.cognitiveservices.azure.com"
+    },
+    {
+      "url": "https://westus.api.cognitive.microsoft.com"
+    }
+  ],
+  "paths": {
+    "/identificationProfiles/{identificationProfileId}/enroll": {
+      "post": {
+        "description": "Enrollment for speaker identification is text-independent, which means that there are no restrictions on what the speaker says in the audio. The speaker's voice is recorded, and a number of features are extracted to form a unique voiceprint.",
+        "operationId": "5645c3271984551c84ec6797",
+        "summary": "Identification Profile - Create Enrollment",
+        "parameters": [
+          {
+            "name": "identificationProfileId",
+            "in": "path",
+            "description": "ID of speaker identification profile. GUID returned from <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c068e597ed22ec38f42e\">Identification Profile - Create Profile</a> API",
+            "required": true,
+            "type": "string",
+            "default": "111f427c-3791-468f-b709-fcef7660fff9",
+            "enum": [
+              "111f427c-3791-468f-b709-fcef7660fff9"
+            ]
+          },
+          {
+            "name": "shortAudio",
+            "in": "query",
+            "description": "Instruct the service to waive the <b>recommended</b> minimum audio limit needed for enrollment. Set value to “<b>true</b>” to force enrollment using any audio length (min. 1 second).",
+            "type": "boolean",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "example": "[BinaryData]"
+            },
+            "description": "You should include the enrollment audio file in the request body. The audio file should be at least 5 seconds long and no longer than 5 minutes. The minimum <b>recommended</b> amount of accumulated speech for enrollment, after removing silence, is 30 seconds. After accumulating 30 seconds of speech, the profile’s enrollment status is changed from <b>enrolling</b> to <b>enrolled</b> to indicate that it is ready for identification.<br/><br/>\n\nIn the case you wish to enroll using any amount of speech time, you should include the \"<b>shortAudio</b>\" parameter. It instructs the service to waive the recommended amount of audio limit needed for enrollment and accordingly the profile’s enrollment status is changed from <b>enrolling</b> to <b>enrolled</b>. When doing so you can send audio files starting 1-second-long but no longer than 5 minutes.<br/><br/>\n\n<b>The audio file format must meet the following requirements.</b>\n<table class=\"table table-hover\" style=\"width:auto;\">\n\t\t\t<tbody>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Container</th>\n\t\t\t\t\t<td>WAV</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Encoding</th>\n\t\t\t\t\t<td>PCM</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Rate</th>\n\t\t\t\t\t<td>16K</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Sample Format</th>\n\t\t\t\t\t<td>16 bit</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Channels</th>\n\t\t\t\t\t<td>Mono</td>\n\t\t\t\t</tr>\n\t\t\t</tbody>\n\t\t</table>"
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/octet-stream"
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted means that the service has accepted the request and will start processing later.<br/>\nIt will return Accepted immediately and add the operation location in header for you to retrieve result status with operation <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c725ca73070ee8845bd6\">Speaker Recognition - Get Operation Status</a>.\n\n    <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Headers</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>Operation-Location</th>\n        <td>User will use this URL to query enrollment operation status. <br/>Example: https://api.projectoxford.ai/spid/v1.0/operations/EF217D0C-9085-45D7-AAE0-2B36471B89B5\n        </td>\n      </tr>\n    </tbody>\n  </table>\n"
+          },
+          "500": {
+            "description": "Returns 500 if there's any error happened in creating enrollment.",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/identificationProfiles": {
+      "post": {
+        "description": "Create a new speaker identification profile with specified locale.<br/>\nOne subscription can only create 1000 speaker verification/identification profiles at most.<br/>",
+        "operationId": "5645c068e597ed22ec38f42e",
+        "summary": "Identification Profile - Create Profile",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "example": "{\n  \"locale\":\"en-us\",\n}"
+            },
+            "description": "Provide following detail info when creating a new identification profile.\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>locale</th>\n        <td>Locale for the language of this speaker identification profile .<br/>A complete supported locale list is here:\n          <br/>\n          <ul>\n\t\t\t      <li><b>es-ES (Castilian Spanish)</b></li>\n\t\t\t      <li><b>en-US (American English)</b></li>\n\t\t\t      <li><b>fr-FR (Standard French)</b></li>\n\t\t\t      <li><b>zh-CN (Mandarin Chinese)</b></li>\n          </ul>\n        </td>\n      </tr>\n    </tbody>\n  </table>"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Speaker identification profile created successfully. GUID is returned to reference the created profile.\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>identificationProfileId</th>\n        <td>Id of the created speaker identification profile.</td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": {
+                "identificationProfileId": "49a36324-fc4b-4387-aa06-090cfbf0064f"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      },
+      "get": {
+        "description": "Get all speaker identification profiles within the subscription.",
+        "operationId": "5645c211e597ed22ec38f431",
+        "summary": "Identification Profile - Get All Profiles",
+        "responses": {
+          "200": {
+            "description": "Request successfully processed by the service. List of all created identification profiles are returned.<br/><br/>\nDescription of the fields in the returned JSON response,\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>identificationProfileId</th>\n        <td>Id of the speaker identification profile.</td>\n      </tr>\n      <tr>\n        <th>locale</th>\n        <td>Language locale of the speaker identification profile.</td>\n      </tr>\n      <tr>\n        <th>enrollmentSpeechTime</th>\n        <td>Total number of useful speech detected in all enrollment audio files provided (seconds).</td>\n      </tr>\n      <tr>\n        <th>remainingEnrollmentSpeechTime</th>\n        <td>Remaining number of speech needed for a successful enrollment (seconds).</td>\n      </tr>\n      <tr>\n        <th>createdDateTime</th>\n        <td>Created date of the speaker identification profile.</td>\n      </tr>\n      <tr>\n        <th>lastActionDateTime</th>\n        <td>Last date of usage for this profile.</td>\n      </tr>\n      <tr>\n        <th>EnrollmentStatus</th>\n        <td>Speaker identification profile enrollment status:\n          <ul>\n            <li><b>Enrolling</b>: profile is currently enrolling and is not ready for identification.</li>\n            <li><b>Training</b>: profile is currently training and is not ready for identification.</li>\n            <li><b>Enrolled</b>: profile is currently enrolled and is ready for identification.</li>\n          </ul>\n        </td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": "[{\n  \"identificationProfileId\" : \"111f427c-3791-468f-b709-fcef7660fff9\",\n  \"locale\" : \"en-US\",\n  \"enrollmentSpeechTime\", 0.0\n  \"remainingEnrollmentSpeechTime\" : 0.0,\n  \"createdDateTime\" : \"2015-04-23T18:25:43.511Z\",\n  \"lastActionDateTime\" : \"2015-04-23T18:25:43.511Z\",\n  \"enrollmentStatus\" : \"Enrolled\" //[Enrolled | Enrolling | Training]\n}, …]"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/identificationProfiles/{identificationProfileId}": {
+      "delete": {
+        "description": "Deletes both speaker identification profile and all associated enrollments permanently from the service.",
+        "operationId": "5645c19de597ed22ec38f430",
+        "summary": "Identification Profile - Delete Profile",
+        "parameters": [
+          {
+            "name": "identificationProfileId",
+            "in": "path",
+            "description": "ID of speaker identification profile. GUID returned from <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c068e597ed22ec38f42e\">Identification Profile - Create Profile</a> API",
+            "required": true,
+            "type": "string",
+            "default": "111f427c-3791-468f-b709-fcef7660fff9",
+            "enum": [
+              "111f427c-3791-468f-b709-fcef7660fff9"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Speaker identification profile and all associated enrolments are deleted successfully from the service."
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      },
+      "get": {
+        "description": "Get a speaker identification profile by identificationProfileId.",
+        "operationId": "5645c0d9e597ed22ec38f42f",
+        "summary": "Identification Profile - Get Profile",
+        "parameters": [
+          {
+            "name": "identificationProfileId",
+            "in": "path",
+            "description": "ID of speaker identification profile. GUID returned from <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c068e597ed22ec38f42e\">Identification Profile - Create Profile</a> API",
+            "required": true,
+            "type": "string",
+            "default": "111f427c-3791-468f-b709-fcef7660fff9",
+            "enum": [
+              "111f427c-3791-468f-b709-fcef7660fff9"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successfully processed by the service, details can be found in the returned JSON.<br/><br/>\nDescription of the fields in the returned JSON response,\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>identificationProfileId</th>\n        <td>Id of the speaker identification profile.</td>\n      </tr>\n      <tr>\n        <th>locale</th>\n        <td>Language locale of the speaker identification profile.</td>\n      </tr>\n      <tr>\n        <th>enrollmentSpeechTime</th>\n        <td>Total number of useful speech detected in all enrollment audio files provided (seconds).</td>\n      </tr>\n      <tr>\n        <th>remainingEnrollmentSpeechTime</th>\n        <td>Remaining number of speech needed for a successful enrollment (seconds).</td>\n      </tr>\n      <tr>\n        <th>createdDateTime</th>\n        <td>Created date of the speaker identification profile.</td>\n      </tr>\n      <tr>\n        <th>lastActionDateTime</th>\n        <td>Last date of usage for this profile.</td>\n      </tr>\n      <tr>\n        <th>EnrollmentStatus</th>\n        <td>Speaker identification profile enrollment status:\n          <ul>\n            <li><b>Enrolling</b>: profile is currently enrolling and is not ready for identification.</li>\n            <li><b>Training</b>: profile is currently training and is not ready for identification.</li>\n            <li><b>Enrolled</b>: profile is currently enrolled and is ready for identification.</li>\n          </ul>\n        </td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": "{\n  \"identificationProfileId\" : \"111f427c-3791-468f-b709-fcef7660fff9\",\n  \"locale\" : \"en-US\",\n  \"enrollmentSpeechTime\", 0.0\n  \"remainingEnrollmentSpeechTime\" : 0.0,\n  \"createdDateTime\" : \"2015-04-23T18:25:43.511Z\",\n  \"lastActionDateTime\" : \"2015-04-23T18:25:43.511Z\",\n  \"enrollmentStatus\" : \"Enrolled\" \n}"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/identificationProfiles/{identificationProfileId}/reset": {
+      "post": {
+        "description": "Deletes all enrollments associated with the given speaker identification profile permanently from the service.",
+        "operationId": "5645c2c1e597ed22ec38f433",
+        "summary": "Identification Profile - Reset Enrollments",
+        "parameters": [
+          {
+            "name": "identificationProfileId",
+            "in": "path",
+            "description": "ID of speaker identification profile. GUID returned from <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c068e597ed22ec38f42e\">Identification Profile - Create Profile</a> API",
+            "required": true,
+            "type": "string",
+            "default": "111f427c-3791-468f-b709-fcef7660fff9",
+            "enum": [
+              "111f427c-3791-468f-b709-fcef7660fff9"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All enrollments associated with the provided speaker identification profile are successfully deleted from the service. Enrollment status is reset and set to <b>“Enrolling”</b>."
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/operations/{operationId}": {
+      "get": {
+        "description": "Get operation status or result. The operation should be created by <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c523778daf217c292592\"> Speaker Recognition - Identification</a> or <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c3271984551c84ec6797\"> Identification Profile - Create Enrollment</a>. And the URL should be retrieved from Operation-Location header of initial POST 202 response",
+        "operationId": "5645c725ca73070ee8845bd6",
+        "summary": "Speaker Recognition - Get Operation Status",
+        "parameters": [
+          {
+            "name": "operationId",
+            "in": "path",
+            "description": "The operation Id, created by <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c523778daf217c292592\"> Speaker Recognition - Identification</a> or <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c3271984551c84ec6797\"> Identification Profile - Create Enrollment</a>. ",
+            "required": true,
+            "type": "string",
+            "default": "EF217D0C-9085-45D7-AAE0-2B36471B89B5",
+            "enum": [
+              "EF217D0C-9085-45D7-AAE0-2B36471B89B5"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request processed successfully by the service. Details can be found in the returned JSON.<br/>\nThe service will retain this operation for 24 hours only, after that it will be deleted from the service.<br/><br/>\nDescription of the fields in the returned JSON response,\n   <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>status</th>\n        <td>The status of the operation.\n          <ul>\n            <li><b>notstarted</b>: The operation is not started.</li>\n            <li><b>running</b>: The operation is running.</li>\n            <li><b>failed</b>: The operation is finished and failed.</li>\n            <li><b>succeeded</b>: The operation is finished and succeeded.</li>\n          </ul>\n        </td>\n      </tr>\n      <tr>\n        <th>createdDateTime</th>\n        <td>Created date of the operation.</td>\n      </tr>\n      <tr>\n        <th>lastActionDateTime</th>\n        <td>Last date of usage for this operation.</td>\n      </tr>\n      <tr>\n        <th>message</th>\n        <td>Detail message returned by this operation. Used in operations with failed status to show detail failure message.</td>\n      </tr>\n      <tr>\n        <th>processingResult</th>\n        <td>An Json Object contains the processing result. This object exists only when the operation status is succeeded.</td>\n      </tr>\n      <tr>\n        <th>EnrollmentStatus</th>\n        <td>Speaker identification profile enrollment status:\n          <ul>\n            <li><b>Enrolling</b>: profile is currently enrolling and is not ready for identification.</li>\n            <li><b>Training</b>: profile is currently training and is not ready for identification.</li>\n            <li><b>Enrolled</b>: profile is currently enrolled and is ready for identification.</li>\n          </ul>\n        </td>\n      </tr>\n      <tr>\n        <th>enrollmentSpeechTime</th>\n        <td>Speaker identification profile enrollment length in seconds of speech.</td>\n      </tr>\n      <tr>\n        <th>remainingEnrollmentSpeechTime</th>\n        <td>Remaining number of speech seconds to complete minimum enrollment.</td>\n      </tr>\n      <tr>\n        <th>speechTime</th>\n        <td>Seconds of useful speech in enrollment audio.</td>\n      </tr>\n      <tr>\n        <th>identifiedProfileId</th>\n        <td>The identified speaker identification profile id. If this value is 00000000-0000-0000-0000-000000000000, it means there's no speaker identification profile identified and the audio file to be identified belongs to none of the provided speaker identification profiles.</td>\n      </tr>\n      <tr>\n        <th>confidence</th>\n        <td>The confidence value of the identification.\n          <ul>\n            <li><b>Low</b>: The confidence of the identification is low.</li>\n            <li><b>Normal</b>: The confidence of the identification is normal.</li>\n            <li><b>High</b>: The confidence of the identification is high.</li>\n          </ul>\n        </td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": "Case 1 - not started \nHTTP/1.1 200 Ok\nContent-Type: application/json\n{\n  \"status\": \"notstarted\",\n  \"createdDateTime\":  \"2015-09-30T01:28:23Z\",\n  \"lastActionDateTime\": \"2015-09-30T01:29:23Z\"\n}\n\nCase 3 - running\nHTTP/1.1 200 Ok\nContent-Type: application/json\n{\n  \"status\": \"running\",\n  \"createdDateTime\":  \"2015-09-30T01:28:23Z\",\n  \"lastActionDateTime\": \"2015-09-30T01:32:23Z\",\n}\n\nCase 4 - failed\nHTTP/1.1 200 Ok\nContent-Type: application/json\n{\n  \"status\": \"failed\",\n  \"createdDateTime\":  \"2015-09-30T01:28:23Z\"\n  \"lastActionDateTime\": \"2015-09-30T01:35:23Z\"\n  \"message\":  \"Some failure info\"\n}\n\nCase 5 - succeeded\nCase 5.1: Enrollment Result: in this case, the enrollment result would be returned inline in \"processingResult\" field.\nHTTP/1.1 200 Ok\nContent-Type: application/json\n{\n  \"status\": \"succeeded\",\n  \"createdDateTime\":  \"2015-09-30T01:28:23Z\", \n  \"lastActionDateTime\": \"2015-09-30T01:37:23Z\",\n  \"processingResult\": \n  {\n    \"enrollmentStatus\" : \"Enrolled\", // [Enrolled|Enrolling|Training]\n    \"remainingEnrollmentSpeechTime\" : 0.0,\n    \"speechTime\" : 0.0,\n    \"enrollmentSpeechTime\":0.0\n  }\n}\n\nCase 5.2.1: Identification Result: in this case, the identification result would be returned inline in \"processingResult\" field. It successfully identified one of the provided profiles.\nHTTP/1.1 200 Ok\nContent-Type: application/json\n{\n  \"status\": \"succeeded\",\n  \"createdDateTime\":  \"2015-09-30T01:28:23Z\", \n  \"lastActionDateTime\": \"2015-09-30T01:37:23Z\",\n  \"processingResult\": \n  {\n    \"identifiedProfileId\" : \"111f427c-3791-468f-b709-fcef7660fff9\", \n    \"confidence\" : \"Normal\" //[Low | Normal | High]\n  }\n}\n\nCase 5.2.2: Identification Result: in this case, the identification result would be returned inline in \"processingResult\" field. It cannot identify the audio among the provided profiles.\nHTTP/1.1 200 Ok\nContent-Type: application/json\n{\n  \"status\": \"succeeded\",\n  \"createdDateTime\":  \"2015-09-30T01:28:23Z\", \n  \"lastActionDateTime\": \"2015-09-30T01:37:23Z\",\n  \"processingResult\": \n  {\n    \"identifiedProfileId\" : \"00000000-0000-0000-0000-000000000000\", \n    \"confidence\" : \"Normal\" //[Low | Normal | High]\n  }\n}\n\n"
+            }
+          },
+          "404": {
+            "description": "Can't find operation.",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "NotFound",
+                  "message": "No operation id found"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/identify": {
+      "post": {
+        "description": "To automatically identify who is speaking given a group of speakers.",
+        "operationId": "5645c523778daf217c292592",
+        "summary": "Speaker Recognition - Identification",
+        "parameters": [
+          {
+            "name": "identificationProfileIds",
+            "in": "query",
+            "description": "Comma-delimited identificationProfileIds, the id should be Guid.<br/>It can only support at most 10 profiles for one identification request.",
+            "required": true,
+            "type": "string",
+            "default": "111f427c-3791-468f-b709-fcef7660fff9,111f427c-3791-468f-b709-fcef7660fff9,111f427c-3791-468f-b709-fcef7660fff9",
+            "enum": [
+              "111f427c-3791-468f-b709-fcef7660fff9,111f427c-3791-468f-b709-fcef7660fff9,111f427c-3791-468f-b709-fcef7660fff9"
+            ]
+          },
+          {
+            "name": "shortAudio",
+            "in": "query",
+            "description": "Instruct the service to waive the <b>recommended</b> minimum audio limit needed for identification. Set value to “<b>true</b>” to force identification using any audio length (min. 1 second).",
+            "type": "boolean",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "example": "[BinaryData]"
+            },
+            "description": "You should include the enrollment audio file in the request body. The minimum <b>recommended</b> amount of accumulated speech for identification, after removing silence, is 30 seconds.<br/><br/>\n\nIn the case you wish to start identification using any amount of speech time, you should include the \"<b>shortAudio</b>\" parameter. It instructs the service to waive the recommended 30 seconds of audio needed to do identification. When doing so you can send audio files starting 1-second-long but no longer than 5 minutes.<br/><br/>\n<b>The audio file format must meet the following requirements.</b>\n\t\t<table class=\"table table-hover\" style=\"width:auto;\">\n\t\t\t<tbody>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Container</th>\n\t\t\t\t\t<td>WAV</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Encoding</th>\n\t\t\t\t\t<td>PCM</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Rate</th>\n\t\t\t\t\t<td>16K</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Sample Format</th>\n\t\t\t\t\t<td>16 bit</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Channels</th>\n\t\t\t\t\t<td>Mono</td>\n\t\t\t\t</tr>\n\t\t\t</tbody>\n\t\t</table>"
+          }
+        ],
+        "consumes": [
+          "application/octet-stream",
+          "multipart/form-data"
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted means that the service has accepted the request and will start processing later.<br/>\nIt will return Accepted immediately and add the operation location in header for you to retrieve result status with operation <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5645c725ca73070ee8845bd6\">Speaker Recognition - Get Operation Status</a>.\n\n    <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Headers</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>Operation-Location</th>\n        <td>User will use this URL to query identification operation status. <br/>Example: https://api.projectoxford.ai/spid/v1.0/operations/EF217D0C-9085-45D7-AAE0-2B36471B89B5\n        </td>\n      </tr>\n    </tbody>\n  </table>"
+          }
+        }
+      }
+    },
+    "/verify": {
+      "post": {
+        "description": "To automatically verify and authenticate users using their voice or speech.",
+        "operationId": "56406930e597ed20c8d8549d",
+        "summary": "Speaker Recognition - Verification",
+        "parameters": [
+          {
+            "name": "verificationProfileId",
+            "in": "query",
+            "description": "ID of speaker verification profile. It should be a GUID.",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "94BC205B-FACD-42A7-9D80-485403106627"
+            ]
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "example": "[BinaryData]"
+            },
+            "description": "You should include the test (verification) audio file in the request body. The audio file should be at least 1-second-long and no longer than 15 seconds. It is recommended to use the same device (mic) used in enrollment.<br/><br/>\n<b>The audio file format must meet the following requirements.</b>\n\t\t<table class=\"table table-hover\" style=\"width:auto;\">\n\t\t\t<tbody>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Container</th>\n\t\t\t\t\t<td>WAV</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Encoding</th>\n\t\t\t\t\t<td>PCM</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Rate</th>\n\t\t\t\t\t<td>16K</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Sample Format</th>\n\t\t\t\t\t<td>16 bit</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Channels</th>\n\t\t\t\t\t<td>Mono</td>\n\t\t\t\t</tr>\n\t\t\t</tbody>\n\t\t</table>\n"
+          }
+        ],
+        "consumes": [
+          "application/octet-stream",
+          "multipart/form-data"
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification request processed successfully by the service.<br/><br/>\nDescription of the fields in the returned JSON response,<br/>\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>result</th>\n        <td>The result of the verification operation.\n          <ul>\n            <li><b>Accept</b>: The verification is accepted.</li>\n            <li><b>Reject</b>: The verification is rejected.</li>\n          </ul>\n        </td>\n      </tr>\n      <tr>\n        <th>confidence</th>\n        <td>The confidence level of the verification.\n          <ul>\n            <li><b>Low</b>: The confidence of the verification is low.</li>\n            <li><b>Normal</b>: The confidence of the verification is normal.</li>\n            <li><b>High</b>: The confidence of the verification is high.</li>\n          </ul>\n        </td>\n      </tr>\n      <tr>\n        <th>phrase</th>\n        <td>The recognized phrase of the verification audio file.</td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": {
+                "result": "Accept",
+                "confidence": "Normal",
+                "phrase": "recognized phrase"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/verificationPhrases": {
+      "get": {
+        "description": "Returns the list of supported verification phrases that can be used for <a href=\"/docs/services/563309b6778daf02acc0a508/operations/56406930e597ed20c8d8549c\">Verification Profile - Create Enrollment</a> and <a href=\"/docs/services/563309b6778daf02acc0a508/operations/56406930e597ed20c8d8549d\">Speaker Recognition - Verification</a>.",
+        "operationId": "5652c0801984551c3859634d",
+        "summary": "Verification Phrase - List All Supported Verification Phrases",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Locale for the language when retrieving verification phrases.",
+            "required": true,
+            "type": "string",
+            "default": "en-US",
+            "enum": [
+              "en-US"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request processed successfully and the list of supported phrases are returned. The returned JSON array consists of a list of objects that contain the supported phrases.<br/><br/>\nDescription of the fields in the returned JSON response,\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>phrase</th>\n        <td>The supported phrase of the speaker verification API.</td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": "[\n  {\n    \"phrase\":\"phrase1\"\n  },\n  {\n    \"phrase\":\"phrase2\"\n  },\n  ...\n]"
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/verificationProfiles/{verificationProfileId}/enroll": {
+      "post": {
+        "description": "Enrollment for speaker verification is text-dependent, which means speaker need to choose a specific phrase to use in both enrollment and verification. List of supported phrases can be found in <a href=\"/docs/services/563309b6778daf02acc0a508/operations/5652c0801984551c3859634d\">Verification Phrase - List All Supported Verification Phrases</a>.<br/><br/>\nThe service requires at least 3 enrollments for each speaker before the profile can be used in verification scenarios. It is recommended to use the same device (mic) in both enrollment and verification.",
+        "operationId": "56406930e597ed20c8d8549c",
+        "summary": "Verification Profile - Create Enrollment",
+        "parameters": [
+          {
+            "name": "verificationProfileId",
+            "in": "path",
+            "description": "ID of speaker verification profile. GUID returned from <a href=\"/docs/services/563309b6778daf02acc0a508/operations/563309b7778daf06340c9652\">Verification Profile - Create Profile</a> API",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "94BC205B-FACD-42A7-9D80-485403106627"
+            ]
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "example": "[BinaryData]"
+            },
+            "description": "You should include the enrollment audio file in the request body. The audio file should be at least 1-second-long and no longer than 15 seconds. Each speaker must provide at least three enrollments to the service.<br/><br/>\n<b>The audio file format must meet the following requirements.</b>\n\t\t<table class=\"table table-hover\" style=\"width:auto;\">\n\t\t\t<tbody>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Container</th>\n\t\t\t\t\t<td>WAV</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Encoding</th>\n\t\t\t\t\t<td>PCM</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Rate</th>\n\t\t\t\t\t<td>16K</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Sample Format</th>\n\t\t\t\t\t<td>16 bit</td>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<th>Channels</th>\n\t\t\t\t\t<td>Mono</td>\n\t\t\t\t</tr>\n\t\t\t</tbody>\n\t\t</table>"
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/octet-stream"
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment request successfully processed by the service.<br/><br/>\nDescription of the fields in the returned JSON response,\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>enrollmentStatus</th>\n        <td>Speaker verification profile enrollment status:\n          <ul>\n            <li><b>Enrolling</b>: profile is currently enrolling and is not ready for verification.</li>\n            <li><b>Training</b>: profile is currently training and is not ready for verification.</li>\n            <li><b>Enrolled</b>: profile is currently enrolled and is ready for verification.</li>\n          </ul>\n        </td>\n      </tr>\n      <tr>\n        <th>enrollmentsCount</th>\n        <td>The current speaker verification profile enrollments count.</td>\n      </tr>\n      <tr>\n        <th>remainingEnrollments</th>\n        <td>Remaining number of required enrollments if enrollmentStatus== Enrolling.</td>\n      </tr>\n      <tr>\n        <th>phrase</th>\n        <td>Recognized phrase of the enrollment audio.</td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": {
+                "enrollmentStatus": "Enrolled",
+                "enrollmentsCount": 0,
+                "remainingEnrollments": 0,
+                "phrase": "Recognized verification phrase"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/verificationProfiles": {
+      "post": {
+        "description": "Create a new speaker verification profile with specific locale.<br/>\nOne subscription can only create 1000 speaker verification/identification profiles at most.<br/>",
+        "operationId": "563309b7778daf06340c9652",
+        "summary": "Verification Profile - Create Profile",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "example": "{\n  \"locale\":\"en-us\",\n}"
+            },
+            "description": "Provide detail info when creating a new speaker verification profile.<br/>\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>locale</th>\n        <td>Locale for language of the new speaker verification profile.\n          <br/>A complete supported locale list is here:\n          <br/>\n          <ul>\n            <li><b>en-US</b></li>\n          </ul>\n        </td>\n      </tr>\n    </tbody>\n  </table>"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Speaker verification profile created successfully. GUID is returned to reference the created profile.\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>verificationProfileId</th>\n        <td>Id of the created speaker verification profile.</td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": {
+                "verificationProfileId": "49a36324-fc4b-4387-aa06-090cfbf0064f"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      },
+      "get": {
+        "description": "Get all speaker verification profiles within the subscription.",
+        "operationId": "563309b7778daf06340c9653",
+        "summary": "Verification Profile - Get All Profiles",
+        "responses": {
+          "200": {
+            "description": "Request successfully processed by the service. List of all created verification profiles are returned.<br/><br/>\nDescription of the fields in the returned JSON response,\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>verificationProfileId</th>\n        <td>Id of the speaker verification profile.</td>\n      </tr>\n      <tr>\n        <th>locale</th>\n        <td>Language locale of the speaker verification profile.</td>\n      </tr>\n      <tr>\n        <th>enrollmentsCount</th>\n        <td>Speaker enrollments count.</td>\n      </tr>\n      <tr>\n        <th>remainingEnrollmentsCount</th>\n        <td>Remaining number of required enrollments if enrollmentStatus== Enrolling.</td>\n      </tr>\n      <tr>\n        <th>createdDateTime</th>\n        <td>Created date of the speaker verification profile.</td>\n      </tr>\n      <tr>\n        <th>lastActionDateTime</th>\n        <td>Last date of usage for this profile.</td>\n      </tr>\n      <tr>\n        <th>EnrollmentStatus</th>\n        <td>Speaker verification profile enrollment status:\n          <ul>\n            <li><b>Enrolling</b>: profile is currently enrolling and is not ready for verification.</li>\n            <li><b>Training</b>: profile is currently training and is not ready for verification.</li>\n            <li><b>Enrolled</b>: profile is currently enrolled and is ready for verification.</li>\n          </ul>\n        </td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": "[{\n  \"verificationProfileId\" : \"111f427c-3791-468f-b709-fcef7660fff9\",\n  \"locale\" : \"en-US\",\n  \"enrollmentsCount\" : 2,\n  \"remainingEnrollmentsCount\" : 0,\n  \"createdDateTime\" : \"2015-04-23T18:25:43.511Z\", \n  \"lastActionDateTime\" : \"2015-04-23T18:25:43.511Z\",\n  \"enrollmentStatus\" : \"Enrolled\" //[Enrolled | Enrolling | Training]\n}, …]"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/verificationProfiles/{verificationProfileId}": {
+      "delete": {
+        "description": "Deletes both speaker verification profile and all associated enrollments permanently from the service.",
+        "operationId": "563309b7778daf06340c9655",
+        "summary": "Verification Profile - Delete Profile",
+        "parameters": [
+          {
+            "name": "verificationProfileId",
+            "in": "path",
+            "description": "ID of speaker verification profile. It should be a GUID.",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "7180c319-88b5-4cf0-824d-1dfd5d4854f4"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Speaker verification profile and all associated enrollments are deleted successfully from the service."
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      },
+      "get": {
+        "description": "Get a speaker verification profile by verificationProfileId",
+        "operationId": "56409ee2778daf19706420de",
+        "summary": "Verification Profile - Get Profile ",
+        "parameters": [
+          {
+            "name": "verificationProfileId",
+            "in": "path",
+            "description": "ID of speaker verification profile. It should be a GUID.",
+            "required": true,
+            "type": "string",
+            "default": "111f427c-3791-468f-b709-fcef7660fff9",
+            "enum": [
+              "111f427c-3791-468f-b709-fcef7660fff9"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successfully processed by the service. Requested verification profile is returned.<br/><br/>\nDescription of the fields in the returned JSON response,\n  <table class=\"table table-hover\">\n    <thead>\n      <tr>\n        <th>Fields</th>\n        <th>Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th>verificationProfileId</th>\n        <td>Id of the speaker verification profile.</td>\n      </tr>\n      <tr>\n        <th>locale</th>\n        <td>Language locale of the speaker verification profile.</td>\n      </tr>\n      <tr>\n        <th>enrollmentsCount</th>\n        <td>Speaker enrollments count.</td>\n      </tr>\n      <tr>\n        <th>remainingEnrollmentsCount</th>\n        <td>Remaining number of required enrollments if enrollmentStatus == Enrolling.</td>\n      </tr>\n      <tr>\n        <th>createdDateTime</th>\n        <td>Created date of the speaker verification profile.</td>\n      </tr>\n      <tr>\n        <th>lastActionDateTime</th>\n        <td>Last date of usage for this profile.</td>\n      </tr>\n      <tr>\n        <th>EnrollmentStatus</th>\n        <td>Speaker verification profile enrollment status:\n          <ul>\n            <li><b>Enrolling</b>: profile is currently enrolling and is not ready for verification.</li>\n            <li><b>Training</b>: profile is currently training and is not ready for verification.</li>\n            <li><b>Enrolled</b>: profile is currently enrolled and is ready for verification.</li>\n          </ul>\n        </td>\n      </tr>\n    </tbody>\n  </table>",
+            "examples": {
+              "application/json": {
+                "verificationProfileId": "111f427c-3791-468f-b709-fcef7660fff9",
+                "locale": "en-US",
+                "enrollmentsCount": 2,
+                "remainingEnrollmentsCount": 0,
+                "createdDateTime": "2015-04-23T18:25:43.511Z",
+                "lastActionDateTime": "2015-04-23T18:25:43.511Z",
+                "enrollmentStatus": "Enrolled"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/verificationProfiles/{verificationProfileId}/reset": {
+      "post": {
+        "description": "Deletes all enrollments associated with the given speaker’s verification profile permanently from the service.",
+        "operationId": "56406930e597ed20c8d8549b",
+        "summary": "Verification Profile - Reset Enrollments",
+        "parameters": [
+          {
+            "name": "verificationProfileId",
+            "in": "path",
+            "description": "ID of speaker verification profile. It should be a GUID.",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "7180c319-88b5-4cf0-824d-1dfd5d4854f4"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All enrollments associated with the provided speaker verification profile are successfully deleted from the service. Enrollment status is reset and set to <b>“Enrolling”</b>."
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "examples": {
+              "application/json": {
+                "error": {
+                  "code": "InternalServerError",
+                  "message": "SpeakerInvalid"
+                }
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
